@@ -13,7 +13,7 @@
 ![Platform](https://img.shields.io/badge/Platform-Windows-00ff41?style=for-the-badge&logo=windows)
 ![Status](https://img.shields.io/badge/Status-Active-00ff41?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-00ff41?style=for-the-badge)
-![Cyber](https://img.shields.io/badge/Theme-Cyberpunk-00ff41?style=for-the-badge)
+
 
 </div>
 
@@ -106,7 +106,7 @@ F --> G[Text Output]
 # Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/Morse-Transmitter.git
+git clone https://github.com/Rwin-X/Morse-Transmitter.git
 
 cd Morse-Transmitter
 
@@ -123,11 +123,6 @@ Morse-Transmitter
 ├── morse_REAL.py
 │
 ├── README.md
-│
-└── assets
-    ├── banner.png
-    └── screenshots
-```
 
 ---
 
@@ -239,8 +234,8 @@ Fork
 # Author
 
 ```yaml
-Name: Dark God
-Field: Cyber Security
+Name: Rwin-X
+Field: text to morse
 Language: Python
 
 ```
