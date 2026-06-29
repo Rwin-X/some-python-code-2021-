@@ -1,1 +1,29 @@
+ecosystem:
 
+
+1---- map:
+
+
+2---- creatures:
+                |
+                |
+                |
+                |----/self.identity
+                |
+                |
+                |----/behavior :
+                |               |---- food eaten:
+                |               |---- attack to enemy:
+                |               |---- type of living
+                |                
+                |
+                |
+                |
+                |
+                |
+                |
+                |----/ability:
+                        
+
+3---- spawn on map:
+                
