@@ -1,0 +1,12 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Aquarium</title><style>
+body{margin:0;background:linear-gradient(#04243d,#0b5f8a);overflow:hidden;font-family:monospace}
+#aq{position:relative;width:900px;height:500px;margin:40px auto;border:6px solid #9fe8ff;border-radius:18px;background:linear-gradient(#0f8fd8,#06527d);overflow:hidden}
+.fish{position:absolute;font-size:42px;color:#ffd166;animation:swim 10s linear infinite}
+.bubble{position:absolute;bottom:-20px;width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.7);animation:rise 6s linear infinite}
+.plant{position:absolute;bottom:0;color:#39d353;font-size:80px}
+@keyframes swim{0%{left:-80px;top:180px;transform:scaleX(1)}49%{transform:scaleX(1)}50%{left:860px;top:220px;transform:scaleX(-1)}99%{transform:scaleX(-1)}100%{left:-80px;top:180px;transform:scaleX(1)}}
+@keyframes rise{from{transform:translateY(0);opacity:.8}to{transform:translateY(-520px);opacity:0}}
+</style></head><body><div id="aq"><div class="plant" style="left:40px">♒</div><div class="plant" style="left:760px">♒</div><div class="fish">&gt;&lt;&gt;</div></div><script>
+const aq=document.getElementById("aq");
+for(let i=0;i<35;i++){let b=document.createElement("div");b.className="bubble";b.style.left=(Math.random()*880)+"px";b.style.animationDelay=(Math.random()*6)+"s";b.style.animationDuration=(4+Math.random()*4)+"s";aq.appendChild(b);}
+</script></body></html>
