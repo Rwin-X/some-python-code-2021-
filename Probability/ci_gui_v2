@@ -1,0 +1,117 @@
+import math
+import tkinter as tk
+from scipy import stats
+
+# RANG HA (dark theme)
+BG = "#0f1411"
+FG = "#d0dcd3"
+GREEN = "#39ff88"
+RED = "#ff5c6c"
+FONT = ("Consolas", 11)
+
+
+def calculate():
+    # gereftan voroodi ha + check kardan
+    try:
+        n = int(entry_n.get())
+        sample_mean = float(entry_mean.get())
+        sample_std = float(entry_std.get())
+
+        # confidence ro be har 3 shekl ghabool mikone: 0.95 / 95 / 95%
+        conf_text = entry_conf.get().replace("%", "")
+        confidence_level = float(conf_text)
+        if confidence_level > 1:
+            confidence_level = confidence_level / 100
+    except ValueError:
+        show_error("Voroodi nadorost: n bayad adad sahih bashe, baghi adad.")
+        return
+
+    if n < 2:
+        show_error("n bayad hadeaghal 2 bashe.")
+        return
+    if sample_std < 0:
+        show_error("Standard deviation nemitoone manfi bashe.")
+        return
+    if confidence_level <= 0 or confidence_level >= 1:
+        show_error("Confidence bayad bein 0 va 1 bashe (mesl 0.95 ya 95%).")
+        return
+
+    # DARAGE AZADI
+    df = n - 1
+
+    # HESAB KARDAN T / JADVAL T
+    alpha = 1 - confidence_level
+    t_critical = stats.t.ppf(1 - alpha / 2, df)
+
+    standard_error = sample_std / math.sqrt(n)
+    margin_error = t_critical * standard_error
+
+    lower = sample_mean - margin_error  # KAMTARIN
+    upper = sample_mean + margin_error  # BISHTARIN
+
+    # CHAP natije
+    result = (
+        f"Degrees of freedom : {df}\n"
+        f"t-value            : {t_critical:.4f}\n"
+        f"Standard error     : {standard_error:.4f}\n"
+        f"Margin of error    : {margin_error:.4f}\n"
+        f"Lower bound        : {lower:.4f}\n"
+        f"Upper bound        : {upper:.4f}\n\n"
+        f"{confidence_level:.0%} Confidence Interval:\n"
+        f"({lower:.4f}, {upper:.4f})"
+    )
+    result_label.config(text=result, fg=GREEN)
+
+
+def show_error(message):
+    result_label.config(text=message, fg=RED)
+
+
+def clear():
+    for entry in (entry_n, entry_mean, entry_std, entry_conf):
+        entry.delete(0, tk.END)
+    entry_conf.insert(0, "0.95")
+    result_label.config(text="")
+    entry_n.focus()
+
+
+def make_row(text, row):
+    # yek label + yek kadr voroodi misaze
+    tk.Label(window, text=text, bg=BG, fg=FG, font=FONT).grid(
+        row=row, column=0, sticky="w", padx=15, pady=6
+    )
+    entry = tk.Entry(window, bg="#1a221d", fg=GREEN, insertbackground=GREEN,
+                     relief="flat", font=FONT, width=15)
+    entry.grid(row=row, column=1, padx=15, ipady=3)
+    return entry
+
+
+# SAKHTAN PANJEREH
+window = tk.Tk()
+window.title("Confidence Interval")
+window.configure(bg=BG)
+
+tk.Label(window, text="t Confidence Interval", bg=BG, fg=GREEN,
+         font=("Consolas", 14, "bold")).grid(row=0, column=0, columnspan=2, pady=12)
+
+entry_n = make_row("sample size (n):", 1)
+entry_mean = make_row("sample mean (x-bar):", 2)
+entry_std = make_row("sample std (s):", 3)
+entry_conf = make_row("confidence (0.95 / 95%):", 4)
+entry_conf.insert(0, "0.95")
+
+tk.Button(window, text="Calculate", command=calculate, bg=GREEN, fg=BG,
+          font=FONT, relief="flat", width=12).grid(row=5, column=0, pady=12)
+tk.Button(window, text="Clear", command=clear, bg="#2a352d", fg=FG,
+          font=FONT, relief="flat", width=12).grid(row=5, column=1, pady=12)
+
+result_label = tk.Label(window, text="", bg=BG, fg=GREEN, font=FONT, justify="left")
+result_label.grid(row=6, column=0, columnspan=2, padx=15, pady=10)
+
+window.bind("<Return>", lambda event: calculate())  # Enter = Calculate
+entry_n.focus()
+
+window.mainloop()
+
+
+####  BY RWIN ANDISHE ####
