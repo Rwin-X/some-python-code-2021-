@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Matrix Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f6f4;--fg:#0c0c0c;--mut:#8a8a86;--line:#d9d9d5;--card:#fff;--soft:#ecece8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0a0a;--fg:#f2f2f0;--mut:#77776f;--line:#252525;--card:#111;--soft:#161616}}
+:root[data-theme="dark"]{--bg:#0a0a0a;--fg:#f2f2f0;--mut:#77776f;--line:#252525;--card:#111;--soft:#161616}
+*{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 13.5px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.wrap{max-width:1180px;margin:0 auto;padding:36px 22px 60px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:1px solid var(--fg);padding-bottom:18px;margin-bottom:26px}
+h1{margin:0;font-weight:800;font-size:clamp(38px,8vw,84px);letter-spacing:-.045em;line-height:.9}
+.lab{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--mut)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px;min-width:0}
+.g2 .card{margin:0}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.ctl{display:flex;align-items:center;gap:6px;color:var(--mut)}
+input{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;outline:none;font-variant-numeric:tabular-nums}
+input:focus{border-color:var(--fg)}
+input.bad{outline:1px dashed var(--fg)}
+.sz{width:46px;padding:5px 6px;text-align:center}
+.mw{overflow-x:auto;padding-bottom:6px}
+.mx{display:grid;gap:6px;width:max-content;padding:0 10px;border-left:1px solid var(--fg);border-right:1px solid var(--fg);border-radius:6px}
+.mx input{width:64px;padding:7px 6px;text-align:center}
+button{font:inherit;font-size:12.5px;color:var(--fg);background:none;border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+button:hover,button.on{border-color:var(--fg)}
+button.on{font-weight:700}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.grp{margin-bottom:18px}.grp:last-child{margin-bottom:0}
+.grp .lab{display:block;margin-bottom:9px}
+.par{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.par input{width:80px;padding:6px 8px;text-align:center}
+.mat{display:grid;gap:6px 14px;width:max-content;padding:8px 14px;border-left:1px solid var(--fg);border-right:1px solid var(--fg);border-radius:6px;font-weight:300;font-size:clamp(15px,2.6vw,22px);letter-spacing:-.02em;font-variant-numeric:tabular-nums;text-align:center}
+pre{margin:0;font:300 clamp(15px,2.6vw,22px)/1.6 Inter,system-ui,sans-serif;letter-spacing:-.02em;white-space:pre-wrap;word-break:break-word;font-variant-numeric:tabular-nums}
+#ro{overflow-x:auto;padding:6px 0 4px}
+#rn{color:var(--mut);margin-top:10px}
+#err{font-weight:500;margin-top:8px}
+details{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+summary{cursor:pointer;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--mut)}
+#st{margin:10px 0 0;padding-left:22px;color:var(--mut);max-height:260px;overflow:auto;font-variant-numeric:tabular-nums}
+label.chk{display:flex;align-items:center;gap:7px;color:var(--mut);cursor:pointer}
+input[type=checkbox]{accent-color:var(--fg);width:auto}
+footer{margin-top:40px;text-align:center}
+@media(max-width:640px){.g2{grid-template-columns:1fr}.wrap{padding:24px 14px 50px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><div class="lab" style="margin-bottom:12px">Linear algebra &middot; exact rational arithmetic</div><h1>Matrix</h1></div>
+  <button id="theme">Theme</button>
+</header>
+
+<div class="g2" id="editors"></div>
+
+<section class="card">
+  <div class="hd"><span class="lab">Operations</span>
+    <div class="ctl">
+      <label class="chk"><input type="checkbox" id="dec"> Decimal output</label>
+      <span class="lab" style="margin-left:10px">Precision</span><input class="sz" type="number" id="prec" min="0" max="10" value="4">
+    </div>
+  </div>
+  <div class="grp"><span class="lab">Binary &middot; uses A and B</span><div class="row" id="gBin" style="margin-top:0"></div></div>
+  <div class="grp"><span class="lab">Unary &middot; operand</span>
+    <div class="row" style="margin:0 0 10px"><button id="opA" class="on">Matrix A</button><button id="opB">Matrix B</button></div>
+    <div class="row" id="gUn" style="margin-top:0"></div></div>
+  <div class="grp"><span class="lab">Parameterized &middot; operand as above</span>
+    <div class="par"><input id="k" value="2"><button data-op="kmul">k &middot; M</button>
+    <span style="width:14px"></span><input id="n" value="3"><button data-op="pow">M ^ n</button></div></div>
+</section>
+
+<section class="card">
+  <div class="hd"><span class="lab" id="rt">Result</span>
+    <div class="ctl"><button id="cp">Copy</button><button id="toA">Use as A</button><button id="toB">Use as B</button></div></div>
+  <div id="ro"><pre style="color:var(--mut)">Choose an operation.</pre></div>
+  <div id="rn"></div><div id="err"></div>
+  <details id="dt" hidden><summary>Step log</summary><ol id="st"></ol></details>
+</section>
+
+<footer class="lab">Exact &middot; Rational &middot; Local &middot; No dependencies</footer>
+</div>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const el = (t, c) => { const e = document.createElement(t); if (c) e.className = c; return e; };
+
+/* ---------- Exact rational arithmetic (BigInt) ---------- */
+const gcd = (a, b) => { if (a < 0n) a = -a; if (b < 0n) b = -b; while (b) [a, b] = [b, a % b]; return a; };
+const mk = (n, d = 1n) => { if (d < 0n) { n = -n; d = -d; } const g = gcd(n, d) || 1n; return { n: n / g, d: d / g }; };
+const ZERO = mk(0n), ONE = mk(1n);
+const add = (a, b) => mk(a.n * b.d + b.n * a.d, a.d * b.d);
+const sub = (a, b) => mk(a.n * b.d - b.n * a.d, a.d * b.d);
+const mul = (a, b) => mk(a.n * b.n, a.d * b.d);
+const div = (a, b) => { if (b.n === 0n) throw new Error("Division by zero"); return mk(a.n * b.d, a.d * b.n); };
+const neg = a => mk(-a.n, a.d);
+const isZ = a => a.n === 0n;
+const eq = (a, b) => a.n === b.n && a.d === b.d;
+const toN = a => Number(a.n) / Number(a.d);
+
+function parse(s) {
+  s = s.trim(); if (!s) return ZERO;
+  const m = /^([+-]?)(\d*)(?:\.(\d*))?(?:\/(\d+))?$/.exec(s);
+  if (!m || (!m[2] && !m[3])) return null;
+  const fr = m[3] || ""; let n = BigInt((m[2] || "0") + fr); if (m[1] === "-") n = -n;
+  const d = 10n ** BigInt(fr.length) * BigInt(m[4] || 1);
+  return d === 0n ? null : mk(n, d);
+}
+
+/* ---------- Formatting ---------- */
+let dec = false, prec = 4;
+const nf = x => String(+x.toFixed(prec));
+const fs = x => x.d === 1n ? x.n.toString() : x.n + "/" + x.d;
+const fmt = x => dec ? nf(toN(x)) : fs(x);
+
+/* ---------- State and editors ---------- */
+const S = { A: { r: 3, c: 3, v: [] }, B: { r: 3, c: 3, v: [] } };
+let operand = "A", last = null, lastOp = null;
+["A", "B"].forEach(k => S[k].v = Array.from({ length: 8 }, (_, i) => Array.from({ length: 8 }, (_, j) => i === j ? "1" : "0")));
+
+function drawEditor(k) {
+  const m = S[k], g = $("#m" + k); g.innerHTML = "";
+  g.style.gridTemplateColumns = `repeat(${m.c},64px)`;
+  for (let i = 0; i < m.r; i++) for (let j = 0; j < m.c; j++) {
+    const inp = el("input"); inp.value = m.v[i][j]; inp.inputMode = "decimal"; inp.dataset.i = i; inp.dataset.j = j;
+    inp.oninput = () => { m.v[i][j] = inp.value; inp.classList.remove("bad"); };
+    inp.onfocus = () => inp.select();
+    inp.onkeydown = e => {
+      const idx = i * m.c + j; let t = null;
+      if (e.key === "Enter" || e.key === "ArrowRight") t = idx + 1;
+      else if (e.key === "ArrowLeft") t = idx - 1;
+      else if (e.key === "ArrowDown") t = idx + m.c;
+      else if (e.key === "ArrowUp") t = idx - m.c;
+      if (t !== null && g.children[t]) { e.preventDefault(); g.children[t].focus(); }
+    };
+    g.append(inp);
+  }
+}
+
+function buildEditors() {
+  ["A", "B"].forEach(k => {
+    const c = el("section", "card");
+    c.innerHTML = `<div class="hd"><span class="lab">Matrix ${k}</span><div class="ctl">
+      <input class="sz" type="number" id="r${k}" min="1" max="8" value="3"> &times;
+      <input class="sz" type="number" id="c${k}" min="1" max="8" value="3"></div></div>
+      <div class="mw"><div class="mx" id="m${k}"></div></div>
+      <div class="row"><button data-k="${k}" data-a="id">Identity</button><button data-k="${k}" data-a="zero">Zero</button>
+      <button data-k="${k}" data-a="rnd">Random</button><button data-k="${k}" data-a="swap">Swap with ${k === "A" ? "B" : "A"}</button></div>`;
+    $("#editors").append(c);
+    ["r", "c"].forEach(p => $("#" + p + k).oninput = e => {
+      const v = Math.max(1, Math.min(8, parseInt(e.target.value) || 1)); S[k][p] = v; drawEditor(k);
+    });
+    drawEditor(k);
+  });
+  document.querySelectorAll("[data-a]").forEach(b => b.onclick = () => {
+    const k = b.dataset.k, m = S[k], a = b.dataset.a;
+    if (a === "swap") { const o = k === "A" ? "B" : "A"; [S.A, S.B] = [S.B, S.A]; syncSizes(); drawEditor("A"); drawEditor("B"); return; }
+    for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++)
+      m.v[i][j] = a === "id" ? (i === j ? "1" : "0") : a === "zero" ? "0" : String(Math.floor(Math.random() * 19) - 9);
+    drawEditor(k);
+  });
+}
+function syncSizes() { ["A", "B"].forEach(k => { $("#r" + k).value = S[k].r; $("#c" + k).value = S[k].c; }); }
+
+function getM(k) {
+  const m = S[k], out = [];
+  for (let i = 0; i < m.r; i++) {
+    const row = [];
+    for (let j = 0; j < m.c; j++) {
+      const v = parse(m.v[i][j]);
+      if (!v) { $("#m" + k).children[i * m.c + j].classList.add("bad"); throw new Error(`Invalid entry in ${k}[${i + 1},${j + 1}]. Use integers, decimals or fractions such as -3/4.`); }
+      row.push(v);
+    }
+    out.push(row);
+  }
+  return out;
+}
+
+/* ---------- Matrix core ---------- */
+const dims = M => `${M.length}\u00d7${M[0].length}`;
+const need = (c, msg) => { if (!c) throw new Error(msg); };
+const square = (M, name) => need(M.length === M[0].length, `${name} must be square (it is ${dims(M)}).`);
+const ident = n => Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => i === j ? ONE : ZERO));
+const transpose = M => M[0].map((_, j) => M.map(r => r[j]));
+const mmul = (A, B) => {
+  need(A[0].length === B.length, `Dimension mismatch: ${dims(A)} cannot be multiplied by ${dims(B)}.`);
+  return A.map(r => B[0].map((_, j) => r.reduce((s, x, k) => add(s, mul(x, B[k][j])), ZERO)));
+};
+const trace = M => M.reduce((s, r, i) => add(s, r[i]), ZERO);
+
+function rref(M, log) {
+  const R = M.map(r => r.slice()), rows = R.length, cols = R[0].length, piv = [];
+  let r = 0;
+  for (let c = 0; c < cols && r < rows; c++) {
+    let p = -1; for (let i = r; i < rows; i++) if (!isZ(R[i][c])) { p = i; break; }
+    if (p < 0) continue;
+    if (p !== r) { [R[p], R[r]] = [R[r], R[p]]; log && log.push(`Swap R${r + 1} and R${p + 1}`); }
+    const pv = R[r][c];
+    if (!eq(pv, ONE)) { R[r] = R[r].map(x => div(x, pv)); log && log.push(`R${r + 1} \u2190 R${r + 1} / ${fs(pv)}`); }
+    for (let i = 0; i < rows; i++) {
+      if (i === r || isZ(R[i][c])) continue;
+      const f = R[i][c]; R[i] = R[i].map((x, j) => sub(x, mul(f, R[r][j])));
+      log && log.push(`R${i + 1} \u2190 R${i + 1} \u2212 (${fs(f)})\u00b7R${r + 1}`);
+    }
+    piv.push(c); r++;
+  }
+  return { R, piv };
+}
+
+function det(M, log) {
+  const A = M.map(r => r.slice()), n = A.length; let d = ONE;
+  for (let c = 0; c < n; c++) {
+    let p = -1; for (let i = c; i < n; i++) if (!isZ(A[i][c])) { p = i; break; }
+    if (p < 0) { log && log.push(`Column ${c + 1} has no pivot, so the determinant is 0`); return ZERO; }
+    if (p !== c) { [A[p], A[c]] = [A[c], A[p]]; d = neg(d); log && log.push(`Swap R${c + 1} and R${p + 1} (sign flips)`); }
+    d = mul(d, A[c][c]); log && log.push(`Pivot ${fs(A[c][c])} at (${c + 1},${c + 1})`);
+    for (let i = c + 1; i < n; i++) { const f = div(A[i][c], A[c][c]); if (isZ(f)) continue;
+      A[i] = A[i].map((x, j) => sub(x, mul(f, A[c][j]))); log && log.push(`R${i + 1} \u2190 R${i + 1} \u2212 (${fs(f)})\u00b7R${c + 1}`); }
+  }
+  return d;
+}
+
+function inverse(M, log) {
+  square(M, "Matrix"); const n = M.length, I = ident(n);
+  const { R, piv } = rref(M.map((r, i) => [...r, ...I[i]]), log);
+  need(piv.length >= n && piv[n - 1] === n - 1, "The matrix is singular (determinant 0) and has no inverse.");
+  return R.map(r => r.slice(n));
+}
+
+function mpow(M, e, log) {
+  square(M, "Matrix"); need(Number.isInteger(e) && Math.abs(e) <= 256, "Exponent must be an integer between \u2212256 and 256.");
+  let base = e < 0 ? inverse(M) : M, n = Math.abs(e), res = ident(M.length);
+  while (n > 0) { if (n & 1) res = mmul(res, base); base = mmul(base, base); n >>= 1; }
+  return res;
+}
+
+function charPoly(M) {
+  const n = M.length, I = ident(n); let Mk = M.map(r => r.map(() => ZERO)); const c = [ONE];
+  for (let k = 1; k <= n; k++) {
+    Mk = mmul(M, Mk).map((r, i) => r.map((x, j) => add(x, mul(c[k - 1], I[i][j]))));
+    c.push(div(neg(trace(mmul(M, Mk))), mk(BigInt(k))));
+  }
+  return c;
+}
+function polyStr(c) {
+  const n = c.length - 1, out = [];
+  c.forEach((x, k) => {
+    if (isZ(x)) return; const p = n - k, ng = x.n < 0n, ax = ng ? neg(x) : x;
+    let cs = p > 0 && eq(ax, ONE) ? "" : (ax.d === 1n || dec ? fmt(ax) : "(" + fs(ax) + ")");
+    const term = cs + (p > 0 ? "\u03bb" + (p > 1 ? "^" + p : "") : "");
+    out.push((out.length ? (ng ? " \u2212 " : " + ") : (ng ? "\u2212" : "")) + term);
+  });
+  return out.join("") || "0";
+}
+
+function qr(A) {
+  const n = A.length, Q = A.map(() => Array(n).fill(0)), R = A.map(() => Array(n).fill(0));
+  for (let j = 0; j < n; j++) {
+    const v = A.map(r => r[j]);
+    for (let i = 0; i < j; i++) { let d = 0; for (let k = 0; k < n; k++) d += Q[k][i] * v[k]; R[i][j] = d; for (let k = 0; k < n; k++) v[k] -= d * Q[k][i]; }
+    const nr = Math.hypot(...v); R[j][j] = nr; for (let k = 0; k < n; k++) Q[k][j] = nr > 1e-14 ? v[k] / nr : 0;
+  }
+  return { Q, R };
+}
+function eigen(M) {
+  let A = M.map(r => r.map(toN)); const n = A.length;
+  const mm = (X, Y) => X.map(r => Y[0].map((_, j) => r.reduce((s, x, k) => s + x * Y[k][j], 0)));
+  for (let it = 0; it < 3000; it++) { const { Q, R } = qr(A); A = mm(R, Q); let off = 0; for (let i = 1; i < n; i++) off += Math.abs(A[i][i - 1]); if (off < 1e-12) break; }
+  const out = [];
+  for (let i = 0; i < n;) {
+    if (i < n - 1 && Math.abs(A[i + 1][i]) > 1e-8) {
+      const a = A[i][i], b = A[i][i + 1], c = A[i + 1][i], d = A[i + 1][i + 1], t = a + d, di = t * t / 4 - (a * d - b * c);
+      if (di < 0) out.push([t / 2, Math.sqrt(-di)], [t / 2, -Math.sqrt(-di)]);
+      else out.push([t / 2 + Math.sqrt(di), 0], [t / 2 - Math.sqrt(di), 0]);
+      i += 2;
+    } else { out.push([A[i][i], 0]); i++; }
+  }
+  return out;
+}
+
+/* ---------- Operation table ---------- */
+const mat = (t, M, steps, note) => ({ t, M, steps, note });
+const txt = (t, text, steps, note) => ({ t, text, steps, note });
+const U = () => [operand, getM(operand)];
+const OPS = {
+  add: ["A + B", "bin", () => { const a = getM("A"), b = getM("B"); need(dims(a) === dims(b), `Dimension mismatch: A is ${dims(a)}, B is ${dims(b)}.`); return mat("A + B", a.map((r, i) => r.map((x, j) => add(x, b[i][j])))); }],
+  sub: ["A \u2212 B", "bin", () => { const a = getM("A"), b = getM("B"); need(dims(a) === dims(b), `Dimension mismatch: A is ${dims(a)}, B is ${dims(b)}.`); return mat("A \u2212 B", a.map((r, i) => r.map((x, j) => sub(x, b[i][j])))); }],
+  ab: ["A \u00d7 B", "bin", () => mat("A \u00d7 B", mmul(getM("A"), getM("B")))],
+  ba: ["B \u00d7 A", "bin", () => mat("B \u00d7 A", mmul(getM("B"), getM("A")))],
+  solve: ["Solve Ax = b", "bin", () => {
+    const a = getM("A"), b = getM("B"); need(a.length === b.length, `A has ${a.length} rows but b (first column of B) has ${b.length}.`);
+    const n = a[0].length, log = [], { R, piv } = rref(a.map((r, i) => [...r, b[i][0]]), log);
+    need(!piv.includes(n), "The system is inconsistent: no solution exists.");
+    const x = Array(n).fill(ZERO); piv.forEach((c, i) => x[c] = R[i][n]);
+    const free = [...Array(n).keys()].filter(c => !piv.includes(c));
+    return mat("Solution x", x.map(v => [v]), log, free.length ? `Infinitely many solutions. Free variables: ${free.map(c => "x" + (c + 1)).join(", ")}. Shown is the particular solution with all free variables set to 0.` : "Unique solution. The right-hand side b is the first column of B.");
+  }],
+  t: ["Transpose", "un", () => { const [k, M] = U(); return mat(k + "\u1d40", transpose(M)); }],
+  det: ["Determinant", "un", () => { const [k, M] = U(); square(M, k); const log = []; return txt("det(" + k + ")", fmt(det(M, log)), log); }],
+  inv: ["Inverse", "un", () => { const [k, M] = U(), log = []; return mat(k + "\u207b\u00b9", inverse(M, log), log, "Computed by Gauss\u2013Jordan elimination on [M | I]."); }],
+  rank: ["Rank", "un", () => { const [k, M] = U(); const { piv } = rref(M); return txt("rank(" + k + ")", String(piv.length)); }],
+  tr: ["Trace", "un", () => { const [k, M] = U(); square(M, k); return txt("tr(" + k + ")", fmt(trace(M))); }],
+  rref: ["RREF", "un", () => { const [k, M] = U(), log = [], { R, piv } = rref(M, log); return mat("rref(" + k + ")", R, log, `Rank ${piv.length}. Pivot columns: ${piv.map(c => c + 1).join(", ") || "none"}.`); }],
+  cp: ["Char. polynomial", "un", () => { const [k, M] = U(); square(M, k); return txt("det(\u03bbI \u2212 " + k + ")", polyStr(charPoly(M)), null, "Computed exactly with the Faddeev\u2013LeVerrier algorithm."); }],
+  eig: ["Eigenvalues", "un", () => { const [k, M] = U(); square(M, k);
+    const ev = eigen(M).map(([re, im], i) => `\u03bb${i + 1} = ` + (Math.abs(im) < 1e-9 ? nf(re) : `${nf(re)} ${im < 0 ? "\u2212" : "+"} ${nf(Math.abs(im))}i`));
+    return txt("Eigenvalues of " + k, ev.join("\n"), null, "Numerical (QR iteration), shown with the selected precision."); }],
+  norm: ["Frobenius norm", "un", () => { const [k, M] = U(); return txt("\u2016" + k + "\u2016F", nf(Math.sqrt(M.flat().reduce((s, x) => s + toN(x) ** 2, 0)))); }],
+  kmul: ["k \u00b7 M", "par", () => { const [k, M] = U(), s = parse($("#k").value); need(s, "Scalar k is invalid."); return mat(fs(s) + " \u00b7 " + k, M.map(r => r.map(x => mul(s, x)))); }],
+  pow: ["M ^ n", "par", () => { const [k, M] = U(), e = Number($("#n").value); return mat(k + "^" + e, mpow(M, e)); }]
+};
+
+/* ---------- Run and render ---------- */
+function run(id) {
+  lastOp = id; $("#err").textContent = "";
+  document.querySelectorAll(".bad").forEach(e => e.classList.remove("bad"));
+  try { show(OPS[id][2]()); } catch (e) { $("#err").textContent = "Error: " + e.message; }
+}
+function show(r) {
+  last = r; $("#rt").textContent = r.t; const o = $("#ro"); o.innerHTML = "";
+  if (r.M) {
+    const g = el("div", "mat"); g.style.gridTemplateColumns = `repeat(${r.M[0].length},minmax(40px,auto))`;
+    r.M.flat().forEach(x => { const c = el("div"); c.textContent = fmt(x); g.append(c); }); o.append(g);
+  }
+  if (r.text !== undefined) { const p = el("pre"); p.textContent = r.text; o.append(p); }
+  $("#rn").textContent = r.note || "";
+  const has = r.steps && r.steps.length; $("#dt").hidden = !has; $("#st").innerHTML = "";
+  if (has) r.steps.forEach(s => { const li = el("li"); li.textContent = s; $("#st").append(li); });
+}
+
+function buildOps() {
+  const grp = { bin: $("#gBin"), un: $("#gUn") };
+  Object.entries(OPS).forEach(([id, [label, g]]) => {
+    if (!grp[g]) return; const b = el("button"); b.textContent = label; b.dataset.op = id; grp[g].append(b);
+  });
+  document.querySelectorAll("[data-op]").forEach(b => b.onclick = () => run(b.dataset.op));
+  const setOp = o => { operand = o; $("#opA").classList.toggle("on", o === "A"); $("#opB").classList.toggle("on", o === "B"); };
+  $("#opA").onclick = () => setOp("A"); $("#opB").onclick = () => setOp("B");
+  $("#dec").onchange = e => { dec = e.target.checked; if (lastOp) run(lastOp); };
+  $("#prec").oninput = e => { prec = Math.max(0, Math.min(10, parseInt(e.target.value) || 0)); if (lastOp) run(lastOp); };
+}
+
+function useAs(k) {
+  if (!last || !last.M) return; const M = last.M; S[k].r = M.length; S[k].c = M[0].length;
+  M.forEach((r, i) => r.forEach((x, j) => S[k].v[i][j] = fs(x))); syncSizes(); drawEditor(k);
+}
+$("#toA").onclick = () => useAs("A"); $("#toB").onclick = () => useAs("B");
+$("#cp").onclick = async () => {
+  if (!last) return;
+  const s = last.M ? last.M.map(r => r.map(fmt).join("\t")).join("\n") : last.text;
+  try { await navigator.clipboard.writeText(s); } catch (e) { const t = el("textarea"); t.value = s; document.body.append(t); t.select(); document.execCommand("copy"); t.remove(); }
+  $("#cp").textContent = "Copied"; setTimeout(() => $("#cp").textContent = "Copy", 1200);
+};
+$("#theme").onclick = () => {
+  const r = document.documentElement, cur = r.dataset.theme || (matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light");
+  r.dataset.theme = cur === "dark" ? "light" : "dark";
+};
+
+buildEditors(); buildOps();
+</script>
+</body>
+</html>
