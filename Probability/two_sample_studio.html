@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Two-Sample Statistics Studio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#070b0c;--panel:#0d1315;--panel2:#121b1d;--fg:#cfd8da;--mut:#62777b;--line:#1d2b2e;--acc:#2ee59d;--accfg:#04110b;--cy:#22d3ee;--bad:#ff6b6b;--glow:0 0 28px rgba(46,229,157,.18);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#efede6;--panel:#fbfaf6;--panel2:#f4f2eb;--fg:#141414;--mut:#6b6b66;--line:#cfcdc4;--acc:#141414;--accfg:#efede6;--cy:#0e7490;--bad:#b91c1c;--glow:none}}
+:root[data-theme="light"]{--bg:#efede6;--panel:#fbfaf6;--panel2:#f4f2eb;--fg:#141414;--mut:#6b6b66;--line:#cfcdc4;--acc:#141414;--accfg:#efede6;--cy:#0e7490;--bad:#b91c1c;--glow:none}
+:root[data-theme="dark"]{--bg:#070b0c;--panel:#0d1315;--panel2:#121b1d;--fg:#cfd8da;--mut:#62777b;--line:#1d2b2e;--acc:#2ee59d;--accfg:#04110b;--cy:#22d3ee;--bad:#ff6b6b;--glow:0 0 28px rgba(46,229,157,.18)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;min-height:100vh;
+background-image:radial-gradient(circle at 12% -10%,rgba(46,229,157,.08),transparent 40%),radial-gradient(circle at 100% 0,rgba(34,211,238,.06),transparent 35%)}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 18px 60px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:clamp(20px,3.4vw,30px);font-weight:800;letter-spacing:-.02em}h1 b{color:var(--acc)}
+.sub{color:var(--mut);font-size:12px;margin-top:4px}
+.btn{font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);padding:8px 14px;cursor:pointer;transition:.15s}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.btn.pri{background:var(--acc);color:var(--accfg);border-color:var(--acc);font-weight:800;letter-spacing:.08em;box-shadow:var(--glow)}
+.btn.pri:hover{filter:brightness(1.12);color:var(--accfg)}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:18px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);padding:16px;position:relative;margin-bottom:14px}
+.card:before,.card:after{content:"";position:absolute;width:9px;height:9px;border:1px solid var(--acc);opacity:.7}
+.card:before{top:-1px;left:-1px;border-right:0;border-bottom:0}.card:after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.card h2{margin:0 0 12px;font-size:11px;letter-spacing:.2em;color:var(--mut);font-weight:600}
+label{display:block;font-size:11px;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;font:inherit;color:var(--fg);background:var(--panel2);border:1px solid var(--line);padding:8px 10px;outline:0;border-radius:0}
+input:focus,select:focus,textarea:focus{border-color:var(--acc);box-shadow:var(--glow)}
+textarea{min-height:84px;resize:vertical}
+.seg{display:grid;grid-auto-flow:column;gap:0;border:1px solid var(--line)}
+.seg button{font:inherit;color:var(--mut);background:var(--panel2);border:0;padding:8px 6px;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--accfg);font-weight:800}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hyp{color:var(--cy);font-weight:600;margin-top:12px;white-space:pre}
+.verdict{font-size:clamp(17px,2.6vw,24px);font-weight:800;padding:14px 16px;border:1px solid currentColor;background:var(--panel);margin-bottom:14px;letter-spacing:-.01em}
+.verdict small{display:block;font-size:12px;font-weight:400;color:var(--mut);margin-top:2px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);padding:10px 12px}
+.stat span{display:block;font-size:10px;color:var(--mut);letter-spacing:.12em;text-transform:uppercase}
+.stat b{font-size:17px;font-weight:600}
+.ci{margin-top:14px;font-size:clamp(15px,2.2vw,20px);color:var(--acc);font-weight:800}
+svg{width:100%;height:auto;display:block}
+.hide{display:none}.err{color:var(--bad);font-size:12px;min-height:18px;margin-top:8px}
+.note{color:var(--mut);font-size:11px;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div><h1>TWO-SAMPLE <b>STUDIO</b></h1><div class="sub">CI + hypothesis test for μ₂ − μ₁ · Z-test &amp; Welch t</div></div>
+ <button class="btn" id="theme">◐ theme</button>
+</header>
+<div class="grid">
+<aside>
+ <div class="card"><h2>SETTINGS</h2>
+  <label>Method</label>
+  <div class="seg" id="method"><button data-v="z" class="on">Z · σ known</button><button data-v="welch">Welch t · σ unknown</button></div>
+  <label>Alternative</label>
+  <select id="tail"><option value="two">Two-sided (≠)</option><option value="right">Right-tailed (&gt;)</option><option value="left">Left-tailed (&lt;)</option></select>
+  <div class="row"><div><label>Confidence</label><input id="conf" value="0.95" inputmode="decimal"></div><div><label>H₀ value δ₀</label><input id="d0" value="0" inputmode="decimal"></div></div>
+  <label>Data source</label>
+  <div class="seg" id="src"><button data-v="sum" class="on">Summary</button><button data-v="raw">Raw data</button></div>
+  <div class="hyp" id="hyp"></div>
+ </div>
+ <div class="card"><h2>GROUP 1 · X</h2><div id="g1"></div></div>
+ <div class="card"><h2>GROUP 2 · Y</h2><div id="g2"></div></div>
+ <div style="display:flex;gap:8px"><button class="btn pri" style="flex:1" id="go">CALCULATE</button><button class="btn" id="ex">Example</button><button class="btn" id="cp">Copy</button></div>
+ <div class="err" id="err"></div>
+</aside>
+<main>
+ <div class="verdict" id="verdict" style="color:var(--mut)">No analysis yet<small>Fill in the inputs and press Calculate</small></div>
+ <div class="card"><h2>RESULTS</h2><div class="stats" id="stats"></div><div class="ci" id="ci"></div></div>
+ <div class="card"><h2>DISTRIBUTION &amp; INTERVAL</h2><svg id="plot" viewBox="0 0 700 380"></svg></div>
+ <div class="note">Accepts Persian/Arabic digits. Raw data: separate by spaces, commas, semicolons or new lines. Z-test with raw data still needs the known σ.</div>
+</main>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const st={method:'z',src:'sum',last:null};
+const norm=t=>t.replace(/[۰-۹]/g,c=>c.charCodeAt(0)-0x6F0).replace(/[٠-٩]/g,c=>c.charCodeAt(0)-0x660).replace(/٫/g,'.').replace(/٬/g,'').replace(/،/g,',').replace(/−/g,'-').trim();
+const num=(t,n)=>{const v=Number(norm(String(t)).replace(',','.'));if(norm(String(t))===''||!isFinite(v))throw Error('“'+n+'” must be a number.');return v};
+const fmt=(v,d=4)=>v===Infinity?'+∞':v===-Infinity?'−∞':isNaN(v)?'n/a':v.toFixed(d);
+const fmtp=p=>p<1e-4?p.toExponential(2):p.toFixed(4);
+function grp(id,name){$(id).innerHTML=`<div class="sumf"><div class="row"><div><label>Sample size n</label><input data-k="n" inputmode="numeric"></div><div><label>Mean</label><input data-k="m" inputmode="decimal"></div></div></div><div class="rawf hide"><label>Observations</label><textarea data-k="raw" placeholder="5.1 4.9 5.6 …"></textarea><div class="sub" data-k="info"></div></div><div class="sdf"><label data-k="sdl">σ · population std</label><input data-k="s" inputmode="decimal"></div>`;}
+grp('#g1');grp('#g2');
+const G=id=>{const e=$(id);return{n:e.querySelector('[data-k=n]'),m:e.querySelector('[data-k=m]'),raw:e.querySelector('[data-k=raw]'),info:e.querySelector('[data-k=info]'),s:e.querySelector('[data-k=s]')}};
+function mode(){const raw=st.src==='raw',z=st.method==='z';
+ for(const id of['#g1','#g2']){const e=$(id);e.querySelector('.sumf').classList.toggle('hide',raw);e.querySelector('.rawf').classList.toggle('hide',!raw);
+  e.querySelector('.sdf').classList.toggle('hide',raw&&!z);e.querySelector('[data-k=sdl]').textContent=z?'σ · population std':'s · sample std'}}
+function seg(id,key){$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$(id).children].forEach(x=>x.classList.toggle('on',x===b));st[key]=b.dataset.v;mode()})}
+seg('#method','method');seg('#src','src');
+function hyp(){let d;try{d=num($('#d0').value,'δ₀')}catch{d='δ₀'}const s={two:'≠',right:'>',left:'<'}[$('#tail').value];$('#hyp').textContent=`H₀: μ₂ − μ₁ = ${d}\nH₁: μ₂ − μ₁ ${s} ${d}`}
+$('#tail').onchange=hyp;$('#d0').oninput=hyp;hyp();mode();
+
+function sample(id,name){const g=G(id);let n,m,s;
+ if(st.src==='raw'){const v=norm(g.raw.value).split(/[\s,;]+/).filter(Boolean).map(x=>{const y=Number(x);if(!isFinite(y))throw Error(name+': “'+x+'” is not a number.');return y});
+  if(!v.length)throw Error(name+': no data entered.');n=v.length;m=v.reduce((a,b)=>a+b,0)/n;
+  const sd=n>1?Math.sqrt(v.reduce((a,b)=>a+(b-m)**2,0)/(n-1)):NaN;g.info.textContent=`n = ${n}  mean = ${fmt(m)}  s = ${fmt(sd)}`;
+  s=st.method==='welch'?sd:num(g.s.value,name+' σ')}
+ else{n=num(g.n.value,name+' sample size');if(n!==Math.floor(n))throw Error(name+': sample size must be a whole number.');m=num(g.m.value,name+' mean');s=num(g.s.value,name+(st.method==='z'?' σ':' s'))}
+ return{n,m,s}}
+
+function analyze(a,b,conf,method,tail,d0){
+ if(!(conf>0&&conf<1))throw Error('Confidence must be strictly between 0 and 1.');
+ for(const[x,l]of[[a,'Group 1'],[b,'Group 2']]){if(x.n<1)throw Error(l+': sample size must be ≥ 1.');if(method==='welch'&&x.n<2)throw Error(l+': Welch needs ≥ 2 observations.');if(!(x.s>=0))throw Error(l+': standard deviation must be ≥ 0.')}
+ const v1=a.s**2/a.n,v2=b.s**2/b.n,se=Math.sqrt(v1+v2);if(se===0)throw Error('Standard error is 0 (both deviations are 0).');
+ const diff=b.m-a.m,al=1-conf;let df=null,cdf,inv;
+ if(method==='z'){cdf=x=>jStat.normal.cdf(x,0,1);inv=p=>jStat.normal.inv(p,0,1)}
+ else{df=(v1+v2)**2/(v1**2/(a.n-1)+v2**2/(b.n-1));cdf=x=>jStat.studentt.cdf(x,df);inv=p=>jStat.studentt.inv(p,df)}
+ const stat=(diff-d0)/se;let crit,lo,hi,p;
+ if(tail==='two'){crit=inv(1-al/2);lo=diff-crit*se;hi=diff+crit*se;p=2*cdf(-Math.abs(stat))}
+ else if(tail==='right'){crit=inv(conf);lo=diff-crit*se;hi=Infinity;p=cdf(-stat)}
+ else{crit=inv(conf);lo=-Infinity;hi=diff+crit*se;p=cdf(stat)}
+ p=Math.min(p,1);const dof=a.n+b.n-2;let d=NaN;
+ if(dof>0){const ps=((a.n-1)*a.s**2+(b.n-1)*b.s**2)/dof;if(ps>0)d=diff/Math.sqrt(ps)}
+ return{method,tail,conf,d0,a,b,diff,se,df,crit,margin:crit*se,lo,hi,stat,p,d,rej:p<al,al}}
+const eff=d=>isNaN(d)?'n/a':Math.abs(d)<.2?'negligible':Math.abs(d)<.5?'small':Math.abs(d)<.8?'medium':'large';
+
+function show(r){
+ const cards=[['Difference (Y−X)',fmt(r.diff)],['Std error',fmt(r.se)],['Statistic',fmt(r.stat)],['p-value',fmtp(r.p)],['Critical value',fmt(r.crit)],['Degrees of freedom',r.df==null?'∞ (normal)':r.df.toFixed(2)],['Margin of error',fmt(r.margin)],['CI lower',fmt(r.lo)],['CI upper',fmt(r.hi)],["Cohen's d",isNaN(r.d)?'n/a':r.d.toFixed(3)+' · '+eff(r.d)]];
+ $('#stats').innerHTML=cards.map(c=>`<div class="stat"><span>${c[0]}</span><b>${c[1]}</b></div>`).join('');
+ const v=$('#verdict');v.style.color=r.rej?'var(--bad)':'var(--acc)';
+ v.innerHTML=(r.rej?'REJECT H₀':'FAIL TO REJECT H₀')+`<small>p = ${fmtp(r.p)} ${r.rej?'<':'≥'} α = ${+r.al.toPrecision(4)}</small>`;
+ $('#ci').textContent=`${+(r.conf*100).toPrecision(6)}% ${r.tail==='two'?'':'one-sided '}CI for μ₂ − μ₁:  (${fmt(r.lo)}, ${fmt(r.hi)})`;
+ draw(r)}
+
+function draw(r){
+ const W=700,x0=36,x1=680,base=218,top=44,z=r.df==null;
+ const pdf=x=>z?jStat.normal.pdf(x,0,1):jStat.studentt.pdf(x,r.df),inv=p=>z?jStat.normal.inv(p,0,1):jStat.studentt.inv(p,r.df);
+ const L=Math.max(4,Math.abs(r.stat)+1),ym=pdf(0)*1.12,X=v=>x0+(v+L)/(2*L)*(x1-x0),Y=v=>base-v/ym*(base-top);
+ const pts=[];for(let i=0;i<=240;i++){const x=-L+2*L*i/240;pts.push([x,pdf(x)])}
+ const line=pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join('');
+ const area=(a,b)=>{const q=pts.filter(p=>p[0]>=a&&p[0]<=b);if(q.length<2)return'';return'M'+X(q[0][0])+' '+base+q.map(p=>'L'+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join('')+'L'+X(q[q.length-1][0])+' '+base+'Z'};
+ const al=1-r.conf;let sh='';
+ if(r.tail==='two'){const c=inv(1-al/2);sh=area(-L,-c)+area(c,L)}else if(r.tail==='right')sh=area(inv(1-al),L);else sh=area(-L,inv(al));
+ let ticks='';for(let t=Math.ceil(-L);t<=L;t++)ticks+=`<text x="${X(t)}" y="${base+16}" text-anchor="middle" fill="var(--mut)" font-size="10">${t}</text>`;
+ const reach=2*Math.abs(r.margin),lo=isFinite(r.lo)?r.lo:r.diff-reach,hi=isFinite(r.hi)?r.hi:r.diff+reach;
+ const a=Math.min(lo,hi,r.d0,r.diff),b=Math.max(lo,hi,r.d0,r.diff),pad=.18*Math.max(b-a,1e-9),A=a-pad,B=b+pad,CX=v=>x0+(v-A)/(B-A)*(x1-x0),cy=318;
+ const lab=(v,dy,c)=>`<text x="${CX(v)}" y="${cy+dy}" text-anchor="middle" fill="${c}" font-size="11">${v.toFixed(3)}</text>`;
+ $('#plot').innerHTML=`<defs><filter id="gl"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+ <text x="${x0}" y="22" fill="var(--mut)" font-size="11" letter-spacing="1.5">TEST STATISTIC UNDER H₀ · ${z?'Z':'t (df = '+r.df.toFixed(1)+')'}</text>
+ <path d="${sh}" fill="var(--bad)" opacity=".42"/><path d="${line}" fill="none" stroke="var(--fg)" stroke-width="1.6"/>
+ <line x1="${x0}" x2="${x1}" y1="${base}" y2="${base}" stroke="var(--line)"/>${ticks}
+ <line x1="${X(r.stat)}" x2="${X(r.stat)}" y1="${top-8}" y2="${base}" stroke="var(--acc)" stroke-width="2.4" filter="url(#gl)"/>
+ <text x="${X(r.stat)+(r.stat>0?-8:8)}" y="${top-12}" text-anchor="${r.stat>0?'end':'start'}" fill="var(--acc)" font-size="11">stat = ${r.stat.toFixed(3)}</text>
+ <text x="${x0}" y="280" fill="var(--mut)" font-size="11" letter-spacing="1.5">${+(r.conf*100).toPrecision(6)}% CONFIDENCE INTERVAL · dashed = H₀ value</text>
+ <line x1="${CX(r.d0)}" x2="${CX(r.d0)}" y1="292" y2="346" stroke="var(--mut)" stroke-dasharray="4 4"/>
+ <line x1="${CX(lo)}" x2="${CX(hi)}" y1="${cy}" y2="${cy}" stroke="var(--cy)" stroke-width="8" stroke-linecap="round" filter="url(#gl)"/>
+ ${isFinite(r.lo)?'':`<path d="M${CX(lo)+4} ${cy-9}L${CX(lo)-8} ${cy}L${CX(lo)+4} ${cy+9}Z" fill="var(--cy)"/>`}${isFinite(r.hi)?'':`<path d="M${CX(hi)-4} ${cy-9}L${CX(hi)+8} ${cy}L${CX(hi)-4} ${cy+9}Z" fill="var(--cy)"/>`}
+ <circle cx="${CX(r.diff)}" cy="${cy}" r="7" fill="var(--panel)" stroke="var(--acc)" stroke-width="2.5"/>
+ ${lab(r.diff,-14,'var(--acc)')}${isFinite(r.lo)?lab(r.lo,26,'var(--fg)'):''}${isFinite(r.hi)?lab(r.hi,26,'var(--fg)'):''}`}
+
+function summary(r){return[`Method: ${r.method==='z'?'Z-test (σ known)':'Welch t-test'}`,`Group 1: n=${r.a.n}, mean=${fmt(r.a.m)}, sd=${fmt(r.a.s)}`,`Group 2: n=${r.b.n}, mean=${fmt(r.b.m)}, sd=${fmt(r.b.s)}`,`Difference (Y−X): ${fmt(r.diff)}`,`SE: ${fmt(r.se)}${r.df!=null?`  df: ${r.df.toFixed(2)}`:''}`,`${r.conf*100}% CI: (${fmt(r.lo)}, ${fmt(r.hi)})`,`Statistic: ${fmt(r.stat)}  p: ${fmtp(r.p)}`,`Decision: ${r.rej?'Reject H0':'Fail to reject H0'} at α=${+r.al.toPrecision(4)}`].join('\n')}
+
+function go(){$('#err').textContent='';
+ try{const r=analyze(sample('#g1','Group 1'),sample('#g2','Group 2'),num($('#conf').value,'Confidence'),st.method,$('#tail').value,num($('#d0').value,'δ₀'));st.last=r;show(r)}
+ catch(e){$('#err').textContent='⚠ '+e.message}}
+$('#go').onclick=go;
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.target.tagName==='INPUT'))go()});
+$('#ex').onclick=()=>{st.src='sum';st.method='z';for(const[id,v]of[['#g1',[40,72.4,8.2]],['#g2',[45,76.1,9.1]]]){const g=G(id);g.n.value=v[0];g.m.value=v[1];g.s.value=v[2]}
+ for(const[s,k]of[['#src','sum'],['#method','z']])[...$(s).children].forEach(b=>b.classList.toggle('on',b.dataset.v===k));mode();go()};
+$('#cp').onclick=async()=>{if(!st.last)return;try{await navigator.clipboard.writeText(summary(st.last));$('#err').textContent='✓ Summary copied'}catch{$('#err').textContent='Copy not available here'}};
+$('#theme').onclick=()=>{const r=document.documentElement,cur=r.dataset.theme||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');r.dataset.theme=cur==='dark'?'light':'dark';try{localStorage.setItem('tss-theme',r.dataset.theme)}catch{}};
+try{const t=localStorage.getItem('tss-theme');if(t)document.documentElement.dataset.theme=t}catch{}
+</script>
+</body>
+</html>
