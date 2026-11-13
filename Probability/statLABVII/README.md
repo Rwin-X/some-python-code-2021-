@@ -19,7 +19,6 @@
 ![License](https://img.shields.io/badge/license-MIT-667a76?style=flat-square&labelColor=0a0e0d)
 
 [Features](#features) ·
-[Install](#installation) ·
 [Quick start](#quick-start) ·
 [Reference](#feature-reference) ·
 [Methods](#methods--conventions) ·
