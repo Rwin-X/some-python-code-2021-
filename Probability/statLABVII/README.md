@@ -48,30 +48,6 @@ decisions at your chosen significance level α.
   can be imported without opening a window (see [Using the engine as a library](#using-the-engine-as-a-library)).
 - **Dark, high-density UI** (phosphor green / cyan, monospace) with matching dark Matplotlib figures.
 
-## Screenshots
-
-<table>
-  <tr>
-    <td width="50%"><img src="docs/screenshots/01-descriptive.png" alt="Descriptive statistics"><br><sub><b>Descriptive</b> - location, spread, quantiles, shape, confidence / prediction / tolerance intervals</sub></td>
-    <td width="50%"><img src="docs/screenshots/02-plots-fit.png" alt="Histogram with best fitted distributions"><br><sub><b>Plots</b> - histogram with the best-ranked fitted PDFs (AIC)</sub></td>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/03-diagnostics.png" alt="Normality tests and outlier detection"><br><sub><b>Diagnostics</b> - five normality tests, five outlier methods</sub></td>
-    <td><img src="docs/screenshots/04-hypothesis-tests.png" alt="Hypothesis test report"><br><sub><b>Tests</b> - hypotheses, critical values, CI, effect size, decision</sub></td>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/05-probability.png" alt="Probability calculator"><br><sub><b>Probability</b> - 15 distributions, tails, intervals, quantiles</sub></td>
-    <td><img src="docs/screenshots/06-spc-capability.png" alt="Control charts and process capability"><br><sub><b>SPC</b> - control charts, Nelson rules, Cp / Cpk / Pp / Ppk</sub></td>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/07-weibull.png" alt="Weibull reliability analysis"><br><sub><b>Reliability</b> - censored Weibull MLE, B-lives, R(t), hazard</sub></td>
-    <td><img src="docs/screenshots/08-regression.png" alt="Multiple regression with diagnostics"><br><sub><b>Regression</b> - multiple / polynomial, VIF, Cook's distance</sub></td>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/09-calculators.png" alt="Calculators"><br><sub><b>Calculators</b> - summary-data tests, power, sample size, probability rules</sub></td>
-    <td><img src="docs/screenshots/10-transform.png" alt="Data transformation"><br><sub><b>Transform</b> - expressions, Box-Cox, cleaning, undo</sub></td>
-  </tr>
-</table>
 
 ## Features
 
@@ -91,20 +67,6 @@ decisions at your chosen significance level α.
 | **Transform** | Safe expression columns, 14 transforms (Box-Cox, Yeo-Johnson, z-score, ...), cleaning, filtering, full undo |
 | **Output** | Copy any table, save figures (PNG / SVG / PDF), export all-column statistics (CSV / XLSX), export a full text report |
 
-## Installation
-
-**Requirements:** Python 3.9 or newer with `tkinter`.
-
-```bash
-git clone https://github.com/<your-username>/stat-lab.git
-cd stat-lab
-
-python -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-
-pip install -r requirements.txt
-python stat_lab.py
-```
 
 Open a file directly from the command line:
 
@@ -478,6 +440,4 @@ strong reason to split it.
 - Shapiro, S. & Wilk, M. (1965). An analysis of variance test for normality. *Biometrika*.
 - Wilson, E. (1927). Probable inference, the law of succession, and statistical inference. *JASA*.
 
-## License
 
-Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.
