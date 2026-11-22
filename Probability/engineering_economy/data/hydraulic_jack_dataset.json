@@ -1,0 +1,204 @@
+{
+  "project": {
+    "name": "Hydraulic Jack Factory - Machining Line Modernization",
+    "product": "20-ton industrial hydraulic bottle jack",
+    "currency": "USD",
+    "analysis_life_years": 8,
+    "note": "Rates in percent. Values under 'expected' are for verifying the tool's output."
+  },
+  "factors": {
+    "input": {
+      "i": 12,
+      "n": 8,
+      "X": 50000,
+      "G": 2000,
+      "g": 5
+    }
+  },
+  "interest": {
+    "nominal_to_effective": {
+      "input": {
+        "r": 14,
+        "m": 12,
+        "P": 200000,
+        "years": 3
+      },
+      "expected": {
+        "effective_annual_rate_pct": 14.934,
+        "future_value_compound": 303653
+      }
+    },
+    "effective_to_nominal": {
+      "input": {
+        "effective_pct": 15,
+        "m": 12
+      }
+    }
+  },
+  "cash_flow": {
+    "description": "New CNC line; year 8 includes 130000 savings + 70000 salvage",
+    "input": {
+      "cash_flows": [
+        -450000,
+        95000,
+        110000,
+        125000,
+        135000,
+        140000,
+        140000,
+        135000,
+        200000
+      ],
+      "marr": 15,
+      "reinvestment_rate": 12,
+      "finance_rate": 10
+    },
+    "expected": {
+      "PW": 121423,
+      "IRR_pct": 22.01,
+      "MIRR_pct": 17.03,
+      "payback_years": 3.89,
+      "discounted_payback_years": 5.91,
+      "BC_ratio": 1.27
+    }
+  },
+  "alternatives": {
+    "input": {
+      "marr": 15,
+      "alternatives": [
+        {
+          "name": "A (semi-automatic CNC)",
+          "initial": 450000,
+          "annual_benefit": 230000,
+          "annual_cost": 120000,
+          "salvage": 50000,
+          "life": 8
+        },
+        {
+          "name": "B (robotic cell)",
+          "initial": 780000,
+          "annual_benefit": 330000,
+          "annual_cost": 150000,
+          "salvage": 120000,
+          "life": 12
+        },
+        {
+          "name": "C (upgrade existing machines)",
+          "initial": 180000,
+          "annual_benefit": 140000,
+          "annual_cost": 90000,
+          "salvage": 15000,
+          "life": 6
+        }
+      ]
+    },
+    "expected": {
+      "lcm_years": 24,
+      "PW": {
+        "A": 85955,
+        "B": 258912,
+        "C": 26706
+      },
+      "AW": {
+        "A": 13360,
+        "B": 40243,
+        "C": 4151
+      },
+      "IRR_pct": {
+        "A": 18.82,
+        "B": 21.08,
+        "C": 18.09
+      },
+      "incremental_ROR_pct": {
+        "C_vs_DoNothing": 18.09,
+        "A_vs_C": 19.27,
+        "B_vs_A": 23.62
+      },
+      "selected": "B"
+    }
+  },
+  "depreciation": {
+    "input": {
+      "B": 450000,
+      "S": 50000,
+      "N": 8,
+      "methods_to_try": [
+        "Straight line",
+        "MACRS (half-year) class 7"
+      ]
+    },
+    "expected": {
+      "straight_line_per_year": 50000,
+      "macrs7_year1": 64305
+    }
+  },
+  "loan": {
+    "input": {
+      "amount": 300000,
+      "annual_rate_pct": 12,
+      "term_years": 5,
+      "payments_per_year": 12,
+      "type": "Equal payments"
+    },
+    "expected": {
+      "payment": 6673.33,
+      "total_interest": 100400
+    }
+  },
+  "after_tax": {
+    "input": {
+      "P": 450000,
+      "S": 50000,
+      "N": 8,
+      "revenue": 230000,
+      "operating_cost": 120000,
+      "tax_rate_pct": 25,
+      "marr_pct": 12,
+      "method": "MACRS (half-year)",
+      "macrs_class": 7
+    },
+    "expected": {
+      "after_tax_PW": 51584,
+      "after_tax_IRR_pct": 15.2,
+      "book_value_year_8": 0
+    },
+    "note": "Book value is 0 at year 8, so the full salvage (50000) is taxed as gain."
+  },
+  "inflation": {
+    "input": {
+      "i": 15,
+      "f": 6,
+      "amount": 100000,
+      "years": 5
+    },
+    "expected": {
+      "real_rate_pct": 8.49
+    }
+  },
+  "capitalized_cost": {
+    "description": "Hydraulic pressure test bench",
+    "input": {
+      "P": 250000,
+      "A": 12000,
+      "R": 40000,
+      "k": 5,
+      "i": 10
+    },
+    "expected": {
+      "capitalized_cost": 435519
+    }
+  },
+  "break_even": {
+    "input": {
+      "plan1_fixed": 120000,
+      "plan1_variable": 24,
+      "price": 38,
+      "plan2_fixed": 260000,
+      "plan2_variable": 17
+    },
+    "expected": {
+      "plan1_break_even_units": 8571,
+      "crossover_units": 20000
+    }
+  }
+}
