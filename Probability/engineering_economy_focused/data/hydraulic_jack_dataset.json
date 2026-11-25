@@ -1,0 +1,32 @@
+{
+  "project": {
+    "name": "Hydraulic jack factory: CNC machining line modernization",
+    "currency": "USD",
+    "note": "Rates in percent. 'expected' values are for checking the tool's output."
+  },
+  "shared": {
+    "cash_flows": [-450000, 95000, 110000, 125000, 135000, 140000, 140000, 135000, 200000],
+    "marr": 15
+  },
+  "interest": {
+    "input": {"mode": "Nominal to effective", "r": 14, "m": 12, "P": 200000, "years": 3},
+    "expected": {"effective_annual_rate_pct": 14.934, "interest_compound": 103653, "interest_simple": 84000}
+  },
+  "cash_flow": {
+    "expected": {"net_total": 630000, "PW_at_marr": 121423.18, "FW": 371436.28, "AW": 27059.17}
+  },
+  "ror": {
+    "expected": {"ror_pct": 22.008, "sign_changes": 1, "bracket_pct": [20, 25], "interpolated_pct": 22.161}
+  },
+  "marr": {
+    "input": {"equity_pct": 60, "cost_equity_pct": 16, "cost_debt_pct": 12, "tax_pct": 25, "premium_pct": 1.8},
+    "expected": {"after_tax_cost_of_debt_pct": 9.0, "wacc_pct": 13.2, "marr_pct": 15.0}
+  },
+  "ror_vs_marr": {
+    "expected": {"difference_points": 7.008, "decision_by_ror": "Accept", "decision_by_pw": "Accept", "rules_agree": true}
+  },
+  "diagram": {
+    "input": {"given": "P", "amount": 100000, "i": 15, "n": 8},
+    "expected": {"A": 22285.01, "F": 305902.29}
+  }
+}
